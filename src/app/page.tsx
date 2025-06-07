@@ -1,103 +1,149 @@
-import Image from "next/image";
+'use client'
+
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
+import { Movie } from '@/types/movie'
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [movies, setMovies] = useState<Movie[]>([])
+  const [loading, setLoading] = useState(true)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    fetchMovies()
+  }, [])
+
+  const fetchMovies = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('movies')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching movies:', error)
+      } else {
+        setMovies(data || [])
+      }
+    } catch (error) {
+      console.error('Error:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen py-8">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h1 className="text-5xl font-bold iron-glow text-yellow-400 mb-2">
+              🎬 IRON CINEMA
+            </h1>
+            <p className="text-gray-300 text-lg">Powered by Arc Reactor Technology</p>
+          </div>
+          <div className="text-center text-yellow-400 text-lg animate-pulse">
+            ⚡ システム起動中...
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen py-8">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-bold iron-title text-yellow-400 mb-2">
+            🎬 IRON CINEMA
+          </h1>
+          <p className="text-gray-300 text-lg iron-nav">Powered by Arc Reactor Technology</p>
+          <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-yellow-400 mx-auto mt-4 rounded-full iron-divider"></div>
+        </div>
+        
+        <div className="mb-8 text-center space-y-4">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/add-movie"
+              className="iron-button iron-button-animated text-white px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 inline-block"
+            >
+              ⚡ 新しい映画を追加
+            </Link>
+            <Link
+              href="/stats"
+              className="iron-button text-white px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 inline-block"
+              style={{ animationDelay: '0.2s' }}
+            >
+              📊 データ解析レポート
+            </Link>
+          </div>
+          <div className="pt-2">
+            <Link
+              href="/admin"
+              className="text-gray-400 hover:text-yellow-400 text-sm transition-colors duration-300"
+            >
+              ⚙️ 管理パネル（サンプルデータ投入）
+            </Link>
+          </div>
+        </div>
+
+        {movies.length === 0 ? (
+          <div className="text-center">
+            <div className="iron-card iron-card-animated rounded-xl p-8 max-w-md mx-auto">
+              <div className="text-yellow-400 text-4xl mb-4 animate-bounce">🤖</div>
+              <p className="text-gray-300 text-lg">
+                データベースが空です。<br />
+                最初の映画を追加してシステムを起動しましょう！
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {movies.map((movie, index) => (
+              <div 
+                key={movie.id} 
+                className="iron-card iron-card-animated rounded-xl overflow-hidden transition-all duration-300"
+                style={{
+                  animationDelay: `${Math.min(index + 1, 6) * 0.1}s`
+                }}
+              >
+                {movie.poster_url && (
+                  <div className="aspect-[2/3] overflow-hidden">
+                    <img
+                      src={movie.poster_url}
+                      alt={movie.title}
+                      className="w-full h-full object-cover border-b-2 border-yellow-400/30"
+                    />
+                  </div>
+                )}
+                <div className="p-6">
+                  <h2 className="text-xl font-bold mb-3 text-yellow-400">{movie.title}</h2>
+                  <div className="space-y-2 mb-4 text-gray-300">
+                    <p><span className="text-red-400 font-semibold">監督:</span> {movie.director}</p>
+                    <p><span className="text-red-400 font-semibold">年:</span> {movie.year}</p>
+                    <p><span className="text-red-400 font-semibold">ジャンル:</span> {movie.genre}</p>
+                  </div>
+                  <p className="text-gray-400 mb-4 line-clamp-3">{movie.description}</p>
+                  <div className="flex gap-2">
+                    <Link
+                      href={`/movie/${movie.id}`}
+                      className="flex-1 text-yellow-400 hover:text-yellow-300 font-semibold transition-colors duration-300 flex items-center gap-2"
+                    >
+                      詳細スキャン開始 <span className="text-red-400">→</span>
+                    </Link>
+                    <Link
+                      href={`/edit-movie/${movie.id}`}
+                      className="px-3 py-1 text-sm bg-blue-600/20 border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 hover:text-blue-300 rounded transition-colors duration-300"
+                    >
+                      編集
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
-  );
+  )
 }
