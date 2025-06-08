@@ -142,7 +142,12 @@ export interface GeneratedImage {
 }
 
 export async function generateSFImage(theme: string): Promise<GeneratedImage> {
+  console.log('generateSFImage called with theme:', theme)
+  console.log('OpenAI client exists:', !!openai)
+  console.log('API key configured:', !!process.env.OPENAI_API_KEY)
+  
   if (!openai) {
+    console.error('OpenAI client not initialized - API key missing')
     throw new Error('OpenAI API key is not configured')
   }
   
@@ -160,6 +165,9 @@ The image should be:
 Style: Digital concept art, hyper-realistic, cinematic lighting, 8K quality
 `
 
+    console.log('Calling OpenAI images.generate with model: gpt-image-1')
+    console.log('Prompt length:', enhancedPrompt.trim().length)
+    
     const response = await openai.images.generate({
       model: 'gpt-image-1',
       prompt: enhancedPrompt.trim(),
@@ -167,30 +175,40 @@ Style: Digital concept art, hyper-realistic, cinematic lighting, 8K quality
       size: '1024x1024'
     })
 
-    // console.log('OpenAI Image response:', JSON.stringify(response, null, 2))
+    console.log('OpenAI Image response received')
+    console.log('Response data length:', response.data?.length || 0)
     
     const imageData = response.data?.[0]
     if (!imageData) {
+      console.error('No image data in response')
       throw new Error('No image data returned from OpenAI')
     }
 
+    console.log('Image data keys:', Object.keys(imageData))
+    console.log('Has b64_json:', !!imageData.b64_json)
+    console.log('Has url:', !!imageData.url)
+
     // Image-1モデルの場合、b64_jsonまたはurlを確認
     if (imageData.b64_json) {
+      console.log('Using b64_json data')
       return {
         base64: imageData.b64_json,
         revised_prompt: imageData.revised_prompt
       }
     } else if (imageData.url) {
+      console.log('Using URL data, fetching image...')
       // URLから画像を取得してbase64に変換
       const imageResponse = await fetch(imageData.url)
       const arrayBuffer = await imageResponse.arrayBuffer()
       const base64 = Buffer.from(arrayBuffer).toString('base64')
       
+      console.log('Image fetched and converted to base64')
       return {
         base64: base64,
         revised_prompt: imageData.revised_prompt
       }
     } else {
+      console.error('Neither b64_json nor url found in response')
       throw new Error('No image data (b64_json or url) returned from OpenAI')
     }
   } catch (error) {

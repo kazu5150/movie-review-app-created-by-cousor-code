@@ -5,7 +5,12 @@ export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('Generate image API called')
+    console.log('Environment check - OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY)
+    console.log('Environment check - OPENAI_API_KEY length:', process.env.OPENAI_API_KEY?.length || 0)
+    
     const { theme } = await request.json()
+    console.log('Theme received:', theme)
     
     if (!theme || typeof theme !== 'string') {
       return NextResponse.json(
@@ -21,7 +26,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    console.log('Calling generateSFImage with theme:', theme.trim())
     const result = await generateSFImage(theme.trim())
+    console.log('generateSFImage completed successfully')
     
     return NextResponse.json({
       success: true,
@@ -30,11 +37,14 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error in generate-image API:', error)
+    console.error('Error name:', error instanceof Error ? error.name : 'Unknown')
+    console.error('Error message:', error instanceof Error ? error.message : 'No message')
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
     
     const errorMessage = error instanceof Error ? error.message : '画像生成中にエラーが発生しました'
     
     return NextResponse.json(
-      { error: errorMessage },
+      { error: errorMessage, details: error instanceof Error ? error.name : 'Unknown error' },
       { status: 500 }
     )
   }
