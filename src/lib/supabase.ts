@@ -1,6 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// Environment variables with fallbacks for build time
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
+
+// Log warning if using fallback values
+if (supabaseUrl === 'https://placeholder.supabase.co') {
+  console.warn('Using placeholder Supabase URL - set NEXT_PUBLIC_SUPABASE_URL environment variable')
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
