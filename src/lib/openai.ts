@@ -132,6 +132,65 @@ export async function getMovieRecommendations(theme: string): Promise<Recommende
   }
 }
 
+export interface GeneratedImage {
+  base64: string
+  revised_prompt?: string
+}
+
+export async function generateSFImage(theme: string): Promise<GeneratedImage> {
+  try {
+    const enhancedPrompt = `
+A high-quality, cinematic science fiction scene inspired by the theme "${theme}". 
+The image should be:
+- Futuristic and sci-fi themed with advanced technology
+- Visually stunning with dramatic lighting and composition
+- Professional movie poster or concept art quality
+- Incorporating key elements related to "${theme}"
+- Ultra-detailed, photorealistic style
+- Cyberpunk, space opera, or hard sci-fi aesthetic
+- Rich metallic colors with neon accents and atmospheric effects
+Style: Digital concept art, hyper-realistic, cinematic lighting, 8K quality
+`
+
+    const response = await openai.images.generate({
+      model: 'gpt-image-1',
+      prompt: enhancedPrompt.trim(),
+      n: 1,
+      size: '1024x1024'
+    })
+
+    // console.log('OpenAI Image response:', JSON.stringify(response, null, 2))
+    
+    const imageData = response.data?.[0]
+    if (!imageData) {
+      throw new Error('No image data returned from OpenAI')
+    }
+
+    // Image-1モデルの場合、b64_jsonまたはurlを確認
+    if (imageData.b64_json) {
+      return {
+        base64: imageData.b64_json,
+        revised_prompt: imageData.revised_prompt
+      }
+    } else if (imageData.url) {
+      // URLから画像を取得してbase64に変換
+      const imageResponse = await fetch(imageData.url)
+      const arrayBuffer = await imageResponse.arrayBuffer()
+      const base64 = Buffer.from(arrayBuffer).toString('base64')
+      
+      return {
+        base64: base64,
+        revised_prompt: imageData.revised_prompt
+      }
+    } else {
+      throw new Error('No image data (b64_json or url) returned from OpenAI')
+    }
+  } catch (error) {
+    console.error('Error generating SF image:', error)
+    throw error
+  }
+}
+
 export async function getMovieInfoFromAI(movieTitle: string): Promise<MovieInfo | null> {
   try {
     const prompt = `

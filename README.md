@@ -20,6 +20,14 @@ Next.js 15 App Router、Supabase、OpenAI GPT-4o-mini、TypeScript を使用し�
 - **映画情報自動取得**: 映画タイトルから詳細情報を自動補完
 - **関連度スコア**: AI分析による推薦理由と関連度の可視化
 
+### 🎨 J.A.R.V.I.S. AI画像生成システム
+- **OpenAI Image-1統合**: 最新のImage-1モデルを使用した高品質SF画像生成
+- **テーマベース画像生成**: 「サイバーパンク都市」「宇宙ステーション」「ロボット戦争」などのテーマで画像生成
+- **シネマティック品質**: 映画ポスター級の高品質なSFコンセプトアート
+- **即座ダウンロード**: 生成した画像をPNG形式で即座にダウンロード
+- **プロンプト表示**: AI生成に使用された詳細プロンプトの確認
+- **高解像度出力**: 1024x1024ピクセルの高解像度画像生成
+
 ### 🎨 マーク別アーマーテーマシステム
 - **Mark 85 - Iron Man**: ダークで重厚な赤と金のアーク・リアクター
 - **Mark II - War Machine**: 戦術的なダークオペレーション
@@ -159,7 +167,7 @@ npm run type-check
 - **フロントエンド**: Next.js 15 (App Router), React 19, TypeScript
 - **スタイリング**: Tailwind CSS v4, Custom CSS Variables
 - **バックエンド**: Supabase (PostgreSQL, RLS)
-- **AI統合**: OpenAI GPT-4o-mini (映画情報自動取得・推薦)
+- **AI統合**: OpenAI GPT-4o-mini (映画情報自動取得・推薦) + Image-1 (SF画像生成)
 - **画像API**: TMDB API (高品質ポスター画像取得)
 - **データビジュアライゼーション**: Recharts
 - **アニメーション**: CSS Transitions, Custom Keyframes
@@ -175,8 +183,13 @@ src/
 │   ├── add-movie/         # 映画追加ページ
 │   ├── movie/[id]/        # 映画詳細ページ
 │   ├── edit-movie/[id]/   # 映画編集ページ
+│   ├── recommendations/   # AI映画推薦ページ
+│   ├── image-generator/   # SF画像生成ページ
 │   ├── stats/             # 統計ページ
 │   ├── intelligence/      # S.H.I.E.L.D. 分析ページ
+│   ├── api/               # API エンドポイント
+│   │   ├── movie-recommendations/ # 映画推薦API
+│   │   └── generate-image/        # 画像生成API
 │   └── admin/             # 管理ページ
 ├── components/            # 再利用可能コンポーネント
 │   ├── ThemeToggle.tsx    # テーマ切替
@@ -203,6 +216,7 @@ src/
 | **映画追加** | `/add-movie` | J.A.R.V.I.S. AI自動入力、新規映画登録 |
 | **映画編集** | `/edit-movie/[id]` | 映画情報編集・更新 |
 | **AI推薦** | `/recommendations` | J.A.R.V.I.S. テーマベース映画推薦システム |
+| **SF画像生成** | `/image-generator` | J.A.R.V.I.S. OpenAI Image-1画像生成システム |
 | **インテリジェンス** | `/intelligence` | S.H.I.E.L.D. 高度な分析ダッシュボード |
 | **管理** | `/admin` | サンプルデータ投入 |
 
