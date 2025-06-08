@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { Movie } from '@/types/movie'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([])
@@ -76,12 +77,22 @@ export default function Home() {
   return (
     <div className="min-h-screen py-8">
       <div className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold iron-title text-yellow-400 mb-2">
+        <div className="text-center mb-8 relative">
+          <div className="absolute top-0 right-0">
+            <ThemeToggle />
+          </div>
+          <h1 className="text-5xl font-bold iron-title mb-2" style={{ color: 'var(--theme-secondary)' }}>
             🎬 IRON CINEMA
           </h1>
-          <p className="text-gray-300 text-lg iron-nav">Powered by Arc Reactor Technology</p>
-          <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-yellow-400 mx-auto mt-4 rounded-full iron-divider"></div>
+          <p className="iron-nav text-lg" style={{ color: 'var(--theme-text-secondary)' }}>
+            Powered by Arc Reactor Technology
+          </p>
+          <div 
+            className="w-24 h-1 mx-auto mt-4 rounded-full iron-divider"
+            style={{ 
+              background: `linear-gradient(to right, var(--theme-primary), var(--theme-secondary))` 
+            }}
+          ></div>
         </div>
         
         <div className="mb-8 text-center space-y-6">
@@ -110,19 +121,32 @@ export default function Home() {
             )}
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
             <Link
               href="/add-movie"
-              className="iron-button iron-button-animated text-white px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 inline-block"
+              className="iron-button iron-button-animated text-white px-6 py-4 rounded-lg font-semibold text-center transition-all duration-300 inline-block"
             >
-              ⚡ 新しい映画を追加
+              <div className="text-2xl mb-1">⚡</div>
+              <div>新しい映画を追加</div>
+              <div className="text-xs opacity-70">Add Movie</div>
             </Link>
             <Link
               href="/stats"
-              className="iron-button text-white px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 inline-block"
+              className="iron-button text-white px-6 py-4 rounded-lg font-semibold text-center transition-all duration-300 inline-block"
               style={{ animationDelay: '0.2s' }}
             >
-              📊 データ解析レポート
+              <div className="text-2xl mb-1">📊</div>
+              <div>データ解析レポート</div>
+              <div className="text-xs opacity-70">Analytics</div>
+            </Link>
+            <Link
+              href="/intelligence"
+              className="iron-button text-white px-6 py-4 rounded-lg font-semibold text-center transition-all duration-300 inline-block"
+              style={{ animationDelay: '0.4s' }}
+            >
+              <div className="text-2xl mb-1">🛡️</div>
+              <div>インテリジェンス</div>
+              <div className="text-xs opacity-70">S.H.I.E.L.D. Report</div>
             </Link>
           </div>
           <div className="pt-2">
@@ -176,19 +200,36 @@ export default function Home() {
                   </Link>
                 )}
                 <div className="p-6">
-                  <h2 className="text-xl font-bold mb-3 text-yellow-400">{movie.title}</h2>
-                  <div className="space-y-2 mb-4 text-gray-300">
-                    <p><span className="text-red-400 font-semibold">監督:</span> {movie.director}</p>
-                    <p><span className="text-red-400 font-semibold">年:</span> {movie.year}</p>
-                    <p><span className="text-red-400 font-semibold">ジャンル:</span> {movie.genre}</p>
+                  <h2 className="text-xl font-bold mb-3" style={{ color: 'var(--theme-secondary)' }}>
+                    {movie.title}
+                  </h2>
+                  <div className="space-y-2 mb-4" style={{ color: 'var(--theme-text-secondary)' }}>
+                    <p>
+                      <span className="font-semibold" style={{ color: 'var(--theme-primary)' }}>監督:</span> {movie.director}
+                    </p>
+                    <p>
+                      <span className="font-semibold" style={{ color: 'var(--theme-primary)' }}>年:</span> {movie.year}
+                    </p>
+                    <p>
+                      <span className="font-semibold" style={{ color: 'var(--theme-primary)' }}>ジャンル:</span> {movie.genre}
+                    </p>
                   </div>
-                  <p className="text-gray-400 mb-4 line-clamp-3">{movie.description}</p>
+                  <p className="mb-4 line-clamp-3" style={{ color: 'var(--theme-text-secondary)' }}>
+                    {movie.description}
+                  </p>
                   <div className="flex gap-2">
                     <Link
                       href={`/movie/${movie.id}`}
-                      className="flex-1 text-yellow-400 hover:text-yellow-300 font-semibold transition-colors duration-300 flex items-center gap-2"
+                      className="flex-1 font-semibold transition-colors duration-300 flex items-center gap-2"
+                      style={{ color: 'var(--theme-secondary)' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = 'var(--theme-accent)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'var(--theme-secondary)'
+                      }}
                     >
-                      詳細スキャン開始 <span className="text-red-400">→</span>
+                      詳細スキャン開始 <span style={{ color: 'var(--theme-primary)' }}>→</span>
                     </Link>
                     <Link
                       href={`/edit-movie/${movie.id}`}

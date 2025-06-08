@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { Movie, Review } from '@/types/movie'
+import PosterModal from '@/components/PosterModal'
 
 export default function MovieDetail() {
   const params = useParams()
@@ -13,6 +14,7 @@ export default function MovieDetail() {
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
   const [showReviewForm, setShowReviewForm] = useState(false)
+  const [showPosterModal, setShowPosterModal] = useState(false)
   const [reviewForm, setReviewForm] = useState({
     reviewer_name: '',
     rating: 5,
@@ -116,17 +118,38 @@ export default function MovieDetail() {
         <div className="iron-card rounded-xl p-8 mb-8">
           <div className="grid md:grid-cols-[250px_1fr] gap-8">
             {movie.poster_url && (
-              <div>
-                <img
-                  src={movie.poster_url}
-                  alt={movie.title}
-                  className="w-full h-auto rounded-lg border-2 border-yellow-400/30"
-                />
+              <div className="relative group">
+                <button
+                  onClick={() => setShowPosterModal(true)}
+                  className="block w-full transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 rounded-lg"
+                  aria-label="ポスターを拡大表示"
+                >
+                  <img
+                    src={movie.poster_url}
+                    alt={movie.title}
+                    className="w-full h-auto rounded-lg border-2 transition-all duration-300 cursor-pointer"
+                    style={{ 
+                      borderColor: 'var(--theme-border)',
+                      filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+                    }}
+                  />
+                  
+                  {/* ホバー時のオーバーレイ */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg flex items-center justify-center">
+                    <div className="text-white text-center">
+                      <div className="text-4xl mb-2">🔍</div>
+                      <div className="font-bold text-lg">拡大表示</div>
+                      <div className="text-sm opacity-80">クリックで詳細表示</div>
+                    </div>
+                  </div>
+                </button>
               </div>
             )}
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h1 className="text-4xl font-bold text-yellow-400 iron-glow">{movie.title}</h1>
+                <h1 className="text-4xl font-bold iron-glow" style={{ color: 'var(--theme-secondary)' }}>
+                  {movie.title}
+                </h1>
                 <Link
                   href={`/edit-movie/${movie.id}`}
                   className="px-4 py-2 bg-blue-600/20 border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 hover:text-blue-300 rounded transition-colors duration-300 font-semibold"
@@ -135,21 +158,32 @@ export default function MovieDetail() {
                 </Link>
               </div>
               <div className="space-y-3 mb-6">
-                <p className="text-gray-300"><span className="text-red-400 font-bold">🎬 監督:</span> {movie.director}</p>
-                <p className="text-gray-300"><span className="text-red-400 font-bold">📅 公開年:</span> {movie.year}</p>
-                <p className="text-gray-300"><span className="text-red-400 font-bold">🎭 ジャンル:</span> {movie.genre}</p>
-                <p className="text-gray-300"><span className="text-red-400 font-bold">⭐ 評価:</span> 
+                <p style={{ color: 'var(--theme-text-secondary)' }}>
+                  <span className="font-bold" style={{ color: 'var(--theme-primary)' }}>🎬 監督:</span> {movie.director}
+                </p>
+                <p style={{ color: 'var(--theme-text-secondary)' }}>
+                  <span className="font-bold" style={{ color: 'var(--theme-primary)' }}>📅 公開年:</span> {movie.year}
+                </p>
+                <p style={{ color: 'var(--theme-text-secondary)' }}>
+                  <span className="font-bold" style={{ color: 'var(--theme-primary)' }}>🎭 ジャンル:</span> {movie.genre}
+                </p>
+                <p style={{ color: 'var(--theme-text-secondary)' }}>
+                  <span className="font-bold" style={{ color: 'var(--theme-primary)' }}>⭐ 評価:</span> 
                   {reviews.length > 0 ? (
-                    <span className="text-yellow-400 font-bold"> {averageRating}/5.0 ({reviews.length}件のレビュー)</span>
+                    <span className="font-bold" style={{ color: 'var(--theme-secondary)' }}> {averageRating}/5.0 ({reviews.length}件のレビュー)</span>
                   ) : (
-                    <span className="text-gray-500"> データなし</span>
+                    <span style={{ color: 'var(--theme-text-secondary)', opacity: 0.6 }}> データなし</span>
                   )}
                 </p>
               </div>
               {movie.description && (
                 <div>
-                  <h3 className="text-yellow-400 font-bold mb-3 text-lg">📖 データファイル</h3>
-                  <p className="text-gray-300 leading-relaxed">{movie.description}</p>
+                  <h3 className="font-bold mb-3 text-lg" style={{ color: 'var(--theme-secondary)' }}>
+                    📖 データファイル
+                  </h3>
+                  <p className="leading-relaxed" style={{ color: 'var(--theme-text-secondary)' }}>
+                    {movie.description}
+                  </p>
                 </div>
               )}
             </div>
@@ -253,6 +287,16 @@ export default function MovieDetail() {
           )}
         </div>
       </div>
+      
+      {/* ポスター拡大モーダル */}
+      {movie?.poster_url && (
+        <PosterModal
+          isOpen={showPosterModal}
+          onClose={() => setShowPosterModal(false)}
+          posterUrl={movie.poster_url}
+          movieTitle={movie.title}
+        />
+      )}
     </div>
   )
 }
