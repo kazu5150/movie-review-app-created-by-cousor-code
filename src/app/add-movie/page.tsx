@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { MovieInfo } from '@/lib/openai'
 
 export default function AddMovie() {
   const router = useRouter()
@@ -16,6 +17,8 @@ export default function AddMovie() {
     poster_url: ''
   })
   const [loading, setLoading] = useState(false)
+  const [aiLoading, setAiLoading] = useState(false)
+  const [searchTitle, setSearchTitle] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -54,6 +57,47 @@ export default function AddMovie() {
     })
   }
 
+  const fetchMovieInfo = async () => {
+    if (!searchTitle.trim()) {
+      alert('映画タイトルを入力してください')
+      return
+    }
+
+    setAiLoading(true)
+    try {
+      const response = await fetch('/api/movie-info', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: searchTitle.trim() }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || '映画情報の取得に失敗しました')
+      }
+
+      setFormData({
+        title: data.title,
+        director: data.director,
+        year: data.year.toString(),
+        genre: data.genre,
+        description: data.description,
+        poster_url: data.poster_url || ''
+      })
+
+      setSearchTitle('')
+      alert('🤖 J.A.R.V.I.S.による映画情報の取得が完了しました！')
+    } catch (error) {
+      console.error('Error fetching movie info:', error)
+      alert(error instanceof Error ? error.message : '映画情報の取得中にエラーが発生しました')
+    } finally {
+      setAiLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen py-8">
       <div className="max-w-2xl mx-auto px-4">
@@ -70,6 +114,34 @@ export default function AddMovie() {
           <p className="text-gray-300">Arc Reactor Database への映画情報アップロード</p>
         </div>
         
+        {/* AI映画情報取得セクション */}
+        <div className="iron-card rounded-xl p-6 mb-6">
+          <h2 className="text-xl font-bold text-yellow-400 mb-4 flex items-center gap-2">
+            🤖 J.A.R.V.I.S. 映画データベース検索
+          </h2>
+          <p className="text-gray-300 text-sm mb-4">
+            映画タイトルを入力するとAIが自動で詳細情報を取得します
+          </p>
+          <div className="flex gap-3">
+            <input
+              type="text"
+              value={searchTitle}
+              onChange={(e) => setSearchTitle(e.target.value)}
+              placeholder="映画タイトルを入力..."
+              className="flex-1 px-4 py-3 bg-gray-800 border border-yellow-400/30 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300"
+              onKeyDown={(e) => e.key === 'Enter' && fetchMovieInfo()}
+            />
+            <button
+              type="button"
+              onClick={fetchMovieInfo}
+              disabled={aiLoading || !searchTitle.trim()}
+              className="iron-button text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {aiLoading ? '🔄 検索中...' : '🚀 検索'}
+            </button>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit} className="iron-card rounded-xl p-8">
           <div className="mb-4">
             <label htmlFor="title" className="block text-sm font-semibold text-yellow-400 mb-2">
