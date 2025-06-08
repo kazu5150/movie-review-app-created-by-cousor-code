@@ -42,14 +42,6 @@ export default function Home() {
 
   const fetchMovies = async () => {
     try {
-      // Check Supabase connection
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-      if (supabaseUrl === 'https://placeholder.supabase.co' || !supabaseUrl) {
-        console.warn('Supabase not properly configured')
-        setLoading(false)
-        return
-      }
-
       const { data, error } = await supabase
         .from('movies')
         .select('*')

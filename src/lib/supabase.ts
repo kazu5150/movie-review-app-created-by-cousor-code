@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://twchqhebnmzvrwrqefqf.supabase.co'
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3Y2hxaGVibm16dnJ3cnFlZnFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjY3MDUsImV4cCI6MjA2NDg0MjcwNX0.2_GkQl6XDVBouyHccowDe64Mcd6IvvxSp0_C8h0t68g'
 
-// Log warning if using fallback values
+// Log warning if using old placeholder values (not our real fallback)
 if (supabaseUrl === 'https://placeholder.supabase.co') {
   console.warn('Using placeholder Supabase URL - set NEXT_PUBLIC_SUPABASE_URL environment variable')
 }
