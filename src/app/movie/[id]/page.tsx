@@ -27,6 +27,18 @@ export default function MovieDetail() {
     }
   }, [params.id])
 
+  // ページがフォーカスされた時にデータを再取得
+  useEffect(() => {
+    const handleFocus = () => {
+      if (params.id) {
+        fetchMovieAndReviews()
+      }
+    }
+
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  }, [params.id])
+
   const fetchMovieAndReviews = async () => {
     try {
       const [movieResponse, reviewsResponse] = await Promise.all([

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Movie } from '@/types/movie'
@@ -9,8 +9,6 @@ export default function EditMoviePage() {
   const router = useRouter()
   const params = useParams()
   const movieId = params.id as string
-  
-  console.log('EditMoviePage rendered with params:', params, 'movieId:', movieId)
 
   const [movie, setMovie] = useState<Movie | null>(null)
   const [loading, setLoading] = useState(true)
@@ -27,85 +25,106 @@ export default function EditMoviePage() {
   })
 
   useEffect(() => {
-    console.log('useEffect triggered with movieId:', movieId)
-    if (movieId) {
-      fetchMovie()
+    const fetchMovie = async () => {
+      if (!movieId) return
+
+      try {
+        setLoading(true)
+        setError(null)
+        
+        const { data, error } = await supabase
+          .from('movies')
+          .select('*')
+          .eq('id', movieId)
+          .single()
+
+        if (error) throw error
+
+        setMovie(data)
+        setFormData({
+          title: data.title || '',
+          director: data.director || '',
+          year: data.year ? data.year.toString() : '',
+          genre: data.genre || '',
+          description: data.description || '',
+          poster_url: data.poster_url || ''
+        })
+      } catch (error) {
+        console.error('映画の取得に失敗しました:', error)
+        setError('映画の取得に失敗しました')
+      } finally {
+        setLoading(false)
+      }
     }
+
+    fetchMovie()
   }, [movieId])
 
-  const fetchMovie = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('=== FORM SUBMIT STARTED ===')
+    setSaving(true)
+    setError(null)
+
+    console.log('Form submission started with data:', formData)
+
     try {
-      setLoading(true)
-      console.log('Fetching movie with ID:', movieId)
-      
+      const updateData = {
+        title: formData.title.trim(),
+        director: formData.director.trim(),
+        year: parseInt(formData.year),
+        genre: formData.genre,
+        description: formData.description.trim(),
+        poster_url: formData.poster_url.trim() || null
+      }
+
+      console.log('Sending update data:', updateData)
+      console.log('Movie ID:', movieId)
+
+      // Supabase接続テスト
+      console.log('Testing Supabase connection...')
+      const testResult = await supabase.from('movies').select('count').limit(1)
+      console.log('Supabase connection test:', testResult)
+
+      console.log('Starting actual update...')
       const { data, error } = await supabase
+        .from('movies')
+        .update(updateData)
+        .eq('id', movieId)
+        .select()
+      
+      console.log('Update completed, processing response...')
+
+      console.log('Supabase update response:', JSON.stringify({ data, error }, null, 2))
+
+      // 更新後にデータベースから再度取得して確認
+      const { data: updatedMovie, error: fetchError } = await supabase
         .from('movies')
         .select('*')
         .eq('id', movieId)
         .single()
 
-      console.log('Supabase response:', { data, error })
+      console.log('Verification fetch:', JSON.stringify({ updatedMovie, fetchError }, null, 2))
 
-      if (error) throw error
-
-      console.log('Fetched movie data:', data)
-      setMovie(data)
-      
-      // データを取得したら直接フォームデータを設定
-      const newFormData = {
-        title: data.title || '',
-        director: data.director || '',
-        year: data.year ? data.year.toString() : '',
-        genre: data.genre || '',
-        description: data.description || '',
-        poster_url: data.poster_url || ''
+      if (error) {
+        console.error('Supabase error:', error)
+        throw error
       }
-      
-      console.log('Setting form data:', newFormData)
-      setFormData(newFormData)
-      
-      // 強制的にフォームを再レンダリングするために遅延を追加
-      setTimeout(() => {
-        setFormData(newFormData)
-      }, 100)
-    } catch (error) {
-      console.error('映画の取得に失敗しました:', error)
-      setError('映画の取得に失敗しました')
-    } finally {
-      setLoading(false)
-    }
-  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setSaving(true)
-    setError(null)
-
-    try {
-      const { error } = await supabase
-        .from('movies')
-        .update({
-          title: formData.title,
-          director: formData.director,
-          year: parseInt(formData.year),
-          genre: formData.genre,
-          description: formData.description,
-          poster_url: formData.poster_url || null
-        })
-        .eq('id', movieId)
-
-      if (error) throw error
-
-      router.push(`/movie/${movieId}`)
+      console.log('Update successful, redirecting to:', `/movie/${movieId}`)
+      alert('映画情報が正常に更新されました！')
+      // 強制的にページを再読み込み
+      window.location.href = `/movie/${movieId}`
     } catch (error) {
       console.error('映画の更新に失敗しました:', error)
-      setError('映画の更新に失敗しました')
+      setError(`映画の更新に失敗しました: ${error instanceof Error ? error.message : '不明なエラー'}`)
     } finally {
       setSaving(false)
     }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    console.log('Form field changed:', e.target.name, '=', e.target.value)
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -148,12 +167,6 @@ export default function EditMoviePage() {
             </div>
           )}
 
-          {/* デバッグ用 */}
-          <div className="mb-4 p-4 bg-gray-800/50 border border-gray-600/30 rounded text-sm">
-            <p className="text-gray-300 mb-2">Form Data Debug:</p>
-            <pre className="text-gray-400">{JSON.stringify(formData, null, 2)}</pre>
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-red-400 mb-1">
@@ -166,7 +179,6 @@ export default function EditMoviePage() {
                 value={formData.title}
                 onChange={handleChange}
                 required
-                key={`title-${movie?.id}`}
                 className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600/30 rounded-md text-gray-100 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400/50"
               />
             </div>
@@ -182,7 +194,6 @@ export default function EditMoviePage() {
                 value={formData.director}
                 onChange={handleChange}
                 required
-                key={`director-${movie?.id}`}
                 className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600/30 rounded-md text-gray-100 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400/50"
               />
             </div>
@@ -265,6 +276,7 @@ export default function EditMoviePage() {
               <button
                 type="submit"
                 disabled={saving}
+                onClick={() => console.log('Update button clicked!')}
                 className="flex-1 iron-button text-white py-2 px-4 rounded-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? '⚡ 更新中...' : '⚡ 更新する'}
