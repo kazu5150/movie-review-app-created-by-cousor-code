@@ -12,17 +12,17 @@
 
 /* Iron Man Theme (Default - Mark 85) */
 [data-theme="iron-man"] {
-  --theme-primary: #dc2626;
-  --theme-secondary: #fbbf24;
-  --theme-accent: #f59e0b;
-  --theme-background: #111827;
-  --theme-surface: #1f2937;
-  --theme-surface-light: #374151;
-  --theme-text: #f9fafb;
-  --theme-text-secondary: #d1d5db;
-  --theme-border: rgba(251, 191, 36, 0.3);
-  --theme-glow: rgba(251, 191, 36, 0.5);
-  --theme-shadow: rgba(220, 38, 38, 0.3);
+  --theme-primary: #b91c1c;
+  --theme-secondary: #d97706;
+  --theme-accent: #ea580c;
+  --theme-background: #0c0a09;
+  --theme-surface: #1c1917;
+  --theme-surface-light: #292524;
+  --theme-text: #f7f5f3;
+  --theme-text-secondary: #a8a29e;
+  --theme-border: rgba(217, 119, 6, 0.3);
+  --theme-glow: rgba(217, 119, 6, 0.5);
+  --theme-shadow: rgba(185, 28, 28, 0.3);
 }
 
 /* War Machine Theme (Mark II - Dark) */
