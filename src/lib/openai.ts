@@ -1,9 +1,25 @@
 import OpenAI from 'openai'
 import { enhanceMovieWithPoster } from './tmdb'
 
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-}) : null
+// OpenAI client initialization function for better error handling
+function createOpenAIClient() {
+  const apiKey = process.env.OPENAI_API_KEY
+  if (!apiKey) {
+    console.error('OPENAI_API_KEY environment variable is not set')
+    return null
+  }
+  
+  try {
+    return new OpenAI({
+      apiKey: apiKey,
+    })
+  } catch (error) {
+    console.error('Failed to initialize OpenAI client:', error)
+    return null
+  }
+}
+
+const openai = createOpenAIClient()
 
 export interface MovieInfo {
   title: string
@@ -26,7 +42,12 @@ export interface RecommendedMovie {
 }
 
 export async function getMovieRecommendations(theme: string): Promise<RecommendedMovie[]> {
-  if (!openai) {
+  let client = openai
+  if (!client) {
+    client = createOpenAIClient()
+  }
+  
+  if (!client) {
     throw new Error('OpenAI API key is not configured')
   }
   
@@ -62,7 +83,7 @@ export async function getMovieRecommendations(theme: string): Promise<Recommende
 - poster_urlは一般的に利用可能な映画ポスター画像のURLを提供（見つからない場合はnull）
 `
 
-    const response = await openai.chat.completions.create({
+    const response = await client.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {
@@ -145,9 +166,17 @@ export async function generateSFImage(theme: string): Promise<GeneratedImage> {
   console.log('generateSFImage called with theme:', theme)
   console.log('OpenAI client exists:', !!openai)
   console.log('API key configured:', !!process.env.OPENAI_API_KEY)
+  console.log('API key length:', process.env.OPENAI_API_KEY?.length || 0)
   
-  if (!openai) {
-    console.error('OpenAI client not initialized - API key missing')
+  // Try to create client if not already initialized
+  let client = openai
+  if (!client) {
+    console.log('Attempting to create OpenAI client...')
+    client = createOpenAIClient()
+  }
+  
+  if (!client) {
+    console.error('OpenAI client not initialized - API key missing or invalid')
     throw new Error('OpenAI API key is not configured')
   }
   
@@ -168,7 +197,7 @@ Style: Digital concept art, hyper-realistic, cinematic lighting, 8K quality
     console.log('Calling OpenAI images.generate with model: gpt-image-1')
     console.log('Prompt length:', enhancedPrompt.trim().length)
     
-    const response = await openai.images.generate({
+    const response = await client.images.generate({
       model: 'gpt-image-1',
       prompt: enhancedPrompt.trim(),
       n: 1,
@@ -218,7 +247,12 @@ Style: Digital concept art, hyper-realistic, cinematic lighting, 8K quality
 }
 
 export async function getMovieInfoFromAI(movieTitle: string): Promise<MovieInfo | null> {
-  if (!openai) {
+  let client = openai
+  if (!client) {
+    client = createOpenAIClient()
+  }
+  
+  if (!client) {
     throw new Error('OpenAI API key is not configured')
   }
   
@@ -251,7 +285,7 @@ export async function getMovieInfoFromAI(movieTitle: string): Promise<MovieInfo 
 }
 `
 
-    const response = await openai.chat.completions.create({
+    const response = await client.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {
