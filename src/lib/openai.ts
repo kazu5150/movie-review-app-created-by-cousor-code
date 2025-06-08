@@ -1,9 +1,9 @@
 import OpenAI from 'openai'
 import { enhanceMovieWithPoster } from './tmdb'
 
-const openai = new OpenAI({
+const openai = process.env.OPENAI_API_KEY ? new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-})
+}) : null
 
 export interface MovieInfo {
   title: string
@@ -26,6 +26,10 @@ export interface RecommendedMovie {
 }
 
 export async function getMovieRecommendations(theme: string): Promise<RecommendedMovie[]> {
+  if (!openai) {
+    throw new Error('OpenAI API key is not configured')
+  }
+  
   try {
     const prompt = `
 ユーザーが入力したテーマ「${theme}」に基づいて、SF映画を5本推薦してください。
@@ -138,6 +142,10 @@ export interface GeneratedImage {
 }
 
 export async function generateSFImage(theme: string): Promise<GeneratedImage> {
+  if (!openai) {
+    throw new Error('OpenAI API key is not configured')
+  }
+  
   try {
     const enhancedPrompt = `
 A high-quality, cinematic science fiction scene inspired by the theme "${theme}". 
@@ -192,6 +200,10 @@ Style: Digital concept art, hyper-realistic, cinematic lighting, 8K quality
 }
 
 export async function getMovieInfoFromAI(movieTitle: string): Promise<MovieInfo | null> {
+  if (!openai) {
+    throw new Error('OpenAI API key is not configured')
+  }
+  
   try {
     const prompt = `
 映画タイトル「${movieTitle}」について、以下の情報を正確に調べて、JSON形式で回答してください。
