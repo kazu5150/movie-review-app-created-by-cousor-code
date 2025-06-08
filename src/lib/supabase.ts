@@ -9,4 +9,10 @@ if (supabaseUrl === 'https://placeholder.supabase.co') {
   console.warn('Using placeholder Supabase URL - set NEXT_PUBLIC_SUPABASE_URL environment variable')
 }
 
+// Debug logging for environment variables (only log in development)
+if (process.env.NODE_ENV === 'development') {
+  console.log('Supabase URL:', supabaseUrl)
+  console.log('Supabase Key exists:', !!supabaseAnonKey)
+}
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
