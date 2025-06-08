@@ -57,7 +57,15 @@ export default function Home() {
 
       if (error) {
         console.error('Error fetching movies:', error)
+        console.error('Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        })
       } else {
+        console.log('Movies fetched successfully:', data?.length || 0, 'movies')
+        console.log('First movie sample:', data?.[0])
         setMovies(data || [])
         setAllMovies(data || [])
       }
