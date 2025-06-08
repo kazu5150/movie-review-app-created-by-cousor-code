@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { supabase, testSupabaseConnection } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { Movie } from '@/types/movie'
 import ThemeToggle from '@/components/ThemeToggle'
 
