@@ -1,17 +1,64 @@
-# 映画レビューサイト
+# 🎬 IRON CINEMA - Powered by Arc Reactor Technology
 
-シンプルな映画レビューサイトです。Next.js App Router と Supabase を使用しています。
+**Iron Man テーマの高度な映画レビューアプリケーション**
 
-## セットアップ
+Next.js 15 App Router、Supabase、TypeScript を使用したプロフェッショナルレベルの映画レビュープラットフォームです。マーベル・シネマティック・ユニバースのアイアンマンをテーマとし、エンタープライズグレードの分析機能を備えています。
 
-1. Supabaseプロジェクトを作成
-2. `.env.local` ファイルに以下を設定:
+![Iron Cinema](https://img.shields.io/badge/Iron%20Cinema-Arc%20Reactor%20Powered-red?style=for-the-badge&logo=marvel)
+![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue?style=for-the-badge&logo=typescript)
+![Supabase](https://img.shields.io/badge/Supabase-Backend-green?style=for-the-badge&logo=supabase)
+
+## 🌟 主要機能
+
+### 🎨 マーク別アーマーテーマシステム
+- **Mark 85 - Iron Man**: クラシックな赤と金のアーク・リアクター
+- **Mark II - War Machine**: 戦術的なダークオペレーション
+- **Mark 49 - Rescue**: 明るいサポートシステム
+- リアルタイムテーマ切替と永続化ストレージ
+
+### 🛡️ S.H.I.E.L.D. インテリジェンス分析
+- **高度な感情分析**: ポジティブ/ネガティブ/ニュートラル自動分類
+- **レビュアープロファイリング**: 専門性、影響力、バイアス分析
+- **映画インテリジェンス**: 論争度、普遍的魅力、技術的達成度
+- **インタラクティブダッシュボード**: 4つの専門分析タブ
+
+### 🔍 高度なユーザーエクスペリエンス
+- **曖昧検索**: タイトル、監督、ジャンル、概要での横断検索
+- **ポスター拡大モーダル**: 美しいアーク・リアクター効果付き
+- **クリック可能ポスター**: ホームページから詳細ページへの直接アクセス
+- **レスポンシブデザイン**: モバイル完全対応
+
+### 📊 データビジュアライゼーション
+- **Recharts**: 円グラフ、棒グラフ、レーダーチャート
+- **リアルタイム統計**: 動的データ更新
+- **エクスポート機能**: 分析結果の出力
+- **トレンド分析**: キーワードとパターン検出
+
+## 🚀 セットアップ
+
+### 1. 前提条件
+- Node.js 18.0.0 以上
+- npm または yarn
+- Supabase アカウント
+
+### 2. リポジトリのクローン
+```bash
+git clone https://github.com/kazu5150/movie-review-app-created-by-cousor-code.git
+cd movie-review-app-created-by-cousor-code
+npm install
 ```
+
+### 3. Supabase セットアップ
+1. [Supabase](https://supabase.com) でプロジェクトを作成
+2. `.env.local` ファイルを作成して環境変数を設定:
+```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-3. Supabaseで以下のSQLを実行してテーブルを作成:
+### 4. データベーススキーマの作成
+Supabase の SQL エディターで以下を実行:
 
 ```sql
 -- 映画テーブル
@@ -49,10 +96,149 @@ CREATE POLICY "Allow public insert access on movies" ON movies FOR INSERT WITH C
 CREATE POLICY "Allow public insert access on reviews" ON reviews FOR INSERT WITH CHECK (true);
 ```
 
-## 開発
+### 5. サンプルデータの投入（オプション）
+アプリ内の「管理パネル」からワンクリックでサンプルデータを投入できます：
+- Marvel 映画（Iron Man トリロジー、Avengers など）
+- SF クラシック（2001年宇宙の旅、ブレードランナー など）
+- アニメ作品（君の名は。、千と千尋の神隠し など）
 
+## 💻 開発
+
+### 開発サーバーの起動
 ```bash
 npm run dev
 ```
-
 ブラウザで [http://localhost:3000](http://localhost:3000) を開いてください。
+
+### 利用可能なコマンド
+```bash
+# 開発サーバー起動
+npm run dev
+
+# プロダクションビルド
+npm run build
+
+# プロダクションサーバー起動
+npm start
+
+# リンティング
+npm run lint
+
+# 型チェック
+npm run type-check
+```
+
+## 🏗️ アーキテクチャ
+
+### 技術スタック
+- **フロントエンド**: Next.js 15 (App Router), React 19, TypeScript
+- **スタイリング**: Tailwind CSS v4, Custom CSS Variables
+- **バックエンド**: Supabase (PostgreSQL, RLS)
+- **データビジュアライゼーション**: Recharts
+- **アニメーション**: CSS Transitions, Custom Keyframes
+- **状態管理**: React Context API
+
+### プロジェクト構造
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── globals.css        # グローバルスタイル + テーマ
+│   ├── layout.tsx         # ルートレイアウト
+│   ├── page.tsx           # ホームページ
+│   ├── add-movie/         # 映画追加ページ
+│   ├── movie/[id]/        # 映画詳細ページ
+│   ├── edit-movie/[id]/   # 映画編集ページ
+│   ├── stats/             # 統計ページ
+│   ├── intelligence/      # S.H.I.E.L.D. 分析ページ
+│   └── admin/             # 管理ページ
+├── components/            # 再利用可能コンポーネント
+│   ├── ThemeToggle.tsx    # テーマ切替
+│   └── PosterModal.tsx    # ポスター拡大モーダル
+├── contexts/              # React Context
+│   └── ThemeContext.tsx   # テーマ管理
+├── lib/                   # ユーティリティ
+│   ├── supabase.ts        # Supabase クライアント
+│   ├── stats.ts           # 統計計算
+│   ├── sampleData.ts      # サンプルデータ
+│   └── reviewAnalytics.ts # 高度な分析エンジン
+└── types/                 # TypeScript 型定義
+    └── movie.ts           # Movie, Review インターフェース
+```
+
+## 🎯 主要ページ
+
+| ページ | パス | 機能 |
+|--------|------|------|
+| **ホーム** | `/` | 映画一覧、検索、テーマ切替 |
+| **映画詳細** | `/movie/[id]` | レビュー表示、ポスター拡大 |
+| **映画追加** | `/add-movie` | 新規映画登録 |
+| **映画編集** | `/edit-movie/[id]` | 映画情報編集 |
+| **統計** | `/stats` | 基本的な統計とグラフ |
+| **インテリジェンス** | `/intelligence` | 高度な分析ダッシュボード |
+| **管理** | `/admin` | サンプルデータ投入 |
+
+## 🎨 テーマシステム
+
+### 3つのアーマーテーマ
+1. **Mark 85 - Iron Man** (デフォルト)
+   - プライマリ: 赤 (#dc2626)
+   - セカンダリ: 金 (#fbbf24)
+
+2. **Mark II - War Machine**
+   - プライマリ: ダークグレー (#374151)
+   - セカンダリ: グレー (#6b7280)
+
+3. **Mark 49 - Rescue**
+   - プライマリ: ブルー (#3b82f6)
+   - セカンダリ: ライトブルー (#60a5fa)
+
+### CSS 変数システム
+全てのカラーが CSS カスタムプロパティで管理され、テーマ切替時にリアルタイムで更新されます。
+
+## 📊 分析機能
+
+### 感情分析エンジン
+- **キーワード分析**: 日本語感情キーワード辞書
+- **スコア計算**: -1〜1の感情スコア
+- **信頼度**: 分析結果の確実性
+- **感情分類**: 喜び、興奮、失望、困惑
+
+### レビュアープロファイリング
+- **専門性検出**: 技術、芸術、哲学、科学分野
+- **影響力スコア**: レビュー長と頻度による算出
+- **バイアス検出**: 評価傾向の分析
+- **品質スコア**: レビューの詳細度と専門性
+
+## 🔧 カスタマイズ
+
+### 新しいテーマの追加
+1. `src/contexts/ThemeContext.tsx` でテーマ設定を追加
+2. `src/app/globals.css` で CSS 変数を定義
+3. `themeConfig` オブジェクトに設定を追加
+
+### 分析アルゴリズムの拡張
+`src/lib/reviewAnalytics.ts` の `ReviewAnalyticsEngine` クラスを拡張して新しい分析機能を追加できます。
+
+## 🤝 コントリビューション
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 ライセンス
+
+このプロジェクトは MIT ライセンスの下で公開されています。
+
+## 🙏 謝辞
+
+- **Marvel Comics**: Iron Man キャラクターとテーマ
+- **Next.js Team**: 素晴らしいフレームワーク
+- **Supabase**: パワフルなバックエンドサービス
+- **Tailwind CSS**: 効率的なスタイリング
+- **Claude Code**: AI ペアプログラミング
+
+---
+
+**🚀 Powered by Arc Reactor Technology - Tony Stark would be proud! 🚀**
