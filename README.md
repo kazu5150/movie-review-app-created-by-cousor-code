@@ -12,11 +12,13 @@ Next.js 15 App Router、Supabase、OpenAI GPT-4o-mini、TypeScript を使用し�
 
 ## 🌟 主要機能
 
-### 🤖 J.A.R.V.I.S. AI映画情報自動取得
-- **OpenAI GPT-4o-mini統合**: 映画タイトルから詳細情報を自動取得
-- **ワンクリック情報入力**: 監督、年、ジャンル、あらすじ、ポスターURLを自動補完
-- **高精度検索**: 実在する映画データの正確な取得
-- **J.A.R.V.I.S.インターフェース**: Iron Manテーマに完全統合されたAI体験
+### 🤖 J.A.R.V.I.S. AI映画システム
+- **AI映画推薦**: ユーザーのテーマに基づいてSF映画を自動推薦
+- **高品質ポスター取得**: TMDB API統合による公式ポスター画像自動取得
+- **テーマベース検索**: 「タイムトラベル」「人工知能」「宇宙探査」などのテーマで推薦
+- **ワンクリック登録**: 推薦された映画をデータベースに即座に登録
+- **映画情報自動取得**: 映画タイトルから詳細情報を自動補完
+- **関連度スコア**: AI分析による推薦理由と関連度の可視化
 
 ### 🎨 マーク別アーマーテーマシステム
 - **Mark 85 - Iron Man**: ダークで重厚な赤と金のアーク・リアクター
@@ -61,8 +63,9 @@ npm install
 ### 3. 環境変数の設定
 1. [Supabase](https://supabase.com) でプロジェクトを作成
 2. [OpenAI Platform](https://platform.openai.com/api-keys) でAPI Keyを取得
-3. `.env.local.example` を `.env.local` にコピー
-4. 環境変数を設定:
+3. [TMDB](https://www.themoviedb.org/settings/api) でAPI Keyを取得（ポスター画像用）
+4. `.env.local.example` を `.env.local` にコピー
+5. 環境変数を設定:
 ```env
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
@@ -70,6 +73,9 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 # OpenAI Configuration (J.A.R.V.I.S.機能用)
 OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxx
+
+# TMDB API Configuration (ポスター画像自動取得用)
+TMDB_API_KEY=your_tmdb_api_key_here
 ```
 
 ### 4. データベーススキーマの作成
@@ -153,7 +159,8 @@ npm run type-check
 - **フロントエンド**: Next.js 15 (App Router), React 19, TypeScript
 - **スタイリング**: Tailwind CSS v4, Custom CSS Variables
 - **バックエンド**: Supabase (PostgreSQL, RLS)
-- **AI統合**: OpenAI GPT-4o-mini (映画情報自動取得)
+- **AI統合**: OpenAI GPT-4o-mini (映画情報自動取得・推薦)
+- **画像API**: TMDB API (高品質ポスター画像取得)
 - **データビジュアライゼーション**: Recharts
 - **アニメーション**: CSS Transitions, Custom Keyframes
 - **状態管理**: React Context API
@@ -179,6 +186,7 @@ src/
 ├── lib/                   # ユーティリティ
 │   ├── supabase.ts        # Supabase クライアント
 │   ├── openai.ts          # OpenAI GPT-4o-mini クライアント
+│   ├── tmdb.ts            # TMDB API クライアント
 │   ├── stats.ts           # 統計計算
 │   ├── sampleData.ts      # サンプルデータ
 │   └── reviewAnalytics.ts # 高度な分析エンジン
@@ -194,6 +202,7 @@ src/
 | **映画詳細** | `/movie/[id]` | レビュー表示、ポスター拡大 |
 | **映画追加** | `/add-movie` | J.A.R.V.I.S. AI自動入力、新規映画登録 |
 | **映画編集** | `/edit-movie/[id]` | 映画情報編集・更新 |
+| **AI推薦** | `/recommendations` | J.A.R.V.I.S. テーマベース映画推薦システム |
 | **インテリジェンス** | `/intelligence` | S.H.I.E.L.D. 高度な分析ダッシュボード |
 | **管理** | `/admin` | サンプルデータ投入 |
 

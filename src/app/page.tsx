@@ -121,7 +121,7 @@ export default function Home() {
             )}
           </div>
           
-          <div className="grid gap-4 sm:grid-cols-2 max-w-3xl mx-auto">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
             <Link
               href="/add-movie"
               className="iron-button iron-button-animated text-white px-6 py-4 rounded-lg font-semibold text-center transition-all duration-300 inline-block"
@@ -131,9 +131,18 @@ export default function Home() {
               <div className="text-xs opacity-70">Add Movie</div>
             </Link>
             <Link
-              href="/intelligence"
+              href="/recommendations"
               className="iron-button text-white px-6 py-4 rounded-lg font-semibold text-center transition-all duration-300 inline-block"
               style={{ animationDelay: '0.2s' }}
+            >
+              <div className="text-2xl mb-1">🤖</div>
+              <div>AI映画推薦</div>
+              <div className="text-xs opacity-70">J.A.R.V.I.S. Recommends</div>
+            </Link>
+            <Link
+              href="/intelligence"
+              className="iron-button text-white px-6 py-4 rounded-lg font-semibold text-center transition-all duration-300 inline-block"
+              style={{ animationDelay: '0.4s' }}
             >
               <div className="text-2xl mb-1">🛡️</div>
               <div>インテリジェンス</div>
