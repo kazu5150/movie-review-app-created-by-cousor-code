@@ -1,17 +1,39 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { Movie } from '@/types/movie'
 
 export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([])
+  const [allMovies, setAllMovies] = useState<Movie[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     fetchMovies()
   }, [])
+
+  const handleSearch = useCallback(() => {
+    if (!searchQuery.trim()) {
+      setMovies(allMovies)
+      return
+    }
+
+    const query = searchQuery.toLowerCase()
+    const filteredMovies = allMovies.filter(movie =>
+      movie.title.toLowerCase().includes(query) ||
+      movie.director.toLowerCase().includes(query) ||
+      movie.genre.toLowerCase().includes(query) ||
+      movie.description.toLowerCase().includes(query)
+    )
+    setMovies(filteredMovies)
+  }, [searchQuery, allMovies])
+
+  useEffect(() => {
+    handleSearch()
+  }, [handleSearch])
 
   const fetchMovies = async () => {
     try {
@@ -24,6 +46,7 @@ export default function Home() {
         console.error('Error fetching movies:', error)
       } else {
         setMovies(data || [])
+        setAllMovies(data || [])
       }
     } catch (error) {
       console.error('Error:', error)
@@ -61,7 +84,32 @@ export default function Home() {
           <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-yellow-400 mx-auto mt-4 rounded-full iron-divider"></div>
         </div>
         
-        <div className="mb-8 text-center space-y-4">
+        <div className="mb-8 text-center space-y-6">
+          <div className="max-w-2xl mx-auto">
+            <div className="relative mb-6">
+              <input
+                type="text"
+                placeholder="🔍 映画を検索... (タイトル、監督、ジャンル、概要)"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-6 py-4 rounded-xl bg-gray-800/50 border-2 border-gray-700/50 text-white placeholder-gray-400 focus:border-yellow-400/50 focus:outline-none transition-all duration-300 text-lg iron-card"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-yellow-400 transition-colors duration-300"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            {searchQuery && (
+              <p className="text-gray-400 text-sm mb-4">
+&quot;{searchQuery}&quot; の検索結果: {movies.length}件
+              </p>
+            )}
+          </div>
+          
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/add-movie"
@@ -90,10 +138,21 @@ export default function Home() {
         {movies.length === 0 ? (
           <div className="text-center">
             <div className="iron-card iron-card-animated rounded-xl p-8 max-w-md mx-auto">
-              <div className="text-yellow-400 text-4xl mb-4 animate-bounce">🤖</div>
+              <div className="text-yellow-400 text-4xl mb-4 animate-bounce">
+                {searchQuery ? '🔍' : '🤖'}
+              </div>
               <p className="text-gray-300 text-lg">
-                データベースが空です。<br />
-                最初の映画を追加してシステムを起動しましょう！
+                {searchQuery ? (
+                  <>
+                    検索条件 &quot;{searchQuery}&quot; に一致する映画が見つかりませんでした。<br />
+                    別のキーワードで検索してみてください。
+                  </>
+                ) : (
+                  <>
+                    データベースが空です。<br />
+                    最初の映画を追加してシステムを起動しましょう！
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -108,13 +167,13 @@ export default function Home() {
                 }}
               >
                 {movie.poster_url && (
-                  <div className="aspect-[2/3] overflow-hidden">
+                  <Link href={`/movie/${movie.id}`} className="block aspect-[2/3] overflow-hidden group">
                     <img
                       src={movie.poster_url}
                       alt={movie.title}
-                      className="w-full h-full object-cover border-b-2 border-yellow-400/30"
+                      className="w-full h-full object-cover border-b-2 border-yellow-400/30 transition-transform duration-300 group-hover:scale-105 cursor-pointer"
                     />
-                  </div>
+                  </Link>
                 )}
                 <div className="p-6">
                   <h2 className="text-xl font-bold mb-3 text-yellow-400">{movie.title}</h2>
