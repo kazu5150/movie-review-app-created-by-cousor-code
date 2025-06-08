@@ -13,10 +13,6 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
-    // Test connection first
-    testSupabaseConnection().then(result => {
-      console.log('Connection test result:', result)
-    })
     fetchMovies()
   }, [])
 
@@ -56,8 +52,6 @@ export default function Home() {
           code: error.code
         })
       } else {
-        console.log('Movies fetched successfully:', data?.length || 0, 'movies')
-        console.log('First movie sample:', data?.[0])
         setMovies(data || [])
         setAllMovies(data || [])
       }
