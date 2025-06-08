@@ -8,6 +8,9 @@ export async function POST(request: NextRequest) {
     console.log('Generate image API called')
     console.log('Environment check - OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY)
     console.log('Environment check - OPENAI_API_KEY length:', process.env.OPENAI_API_KEY?.length || 0)
+    console.log('Environment check - OPENAI_API_KEY prefix:', process.env.OPENAI_API_KEY?.substring(0, 7) || 'not set')
+    console.log('Environment check - NODE_ENV:', process.env.NODE_ENV)
+    console.log('Environment check - VERCEL_ENV:', process.env.VERCEL_ENV || 'not on vercel')
     
     const { theme } = await request.json()
     console.log('Theme received:', theme)

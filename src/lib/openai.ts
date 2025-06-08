@@ -6,6 +6,7 @@ function createOpenAIClient() {
   const apiKey = process.env.OPENAI_API_KEY
   if (!apiKey) {
     console.error('OPENAI_API_KEY environment variable is not set')
+    console.error('Available env vars:', Object.keys(process.env).filter(k => k.includes('OPENAI')))
     return null
   }
   
@@ -19,7 +20,7 @@ function createOpenAIClient() {
   }
 }
 
-const openai = createOpenAIClient()
+let openai: OpenAI | null = null
 
 export interface MovieInfo {
   title: string
@@ -42,13 +43,12 @@ export interface RecommendedMovie {
 }
 
 export async function getMovieRecommendations(theme: string): Promise<RecommendedMovie[]> {
-  let client = openai
-  if (!client) {
-    client = createOpenAIClient()
+  if (!openai) {
+    openai = createOpenAIClient()
   }
   
-  if (!client) {
-    throw new Error('OpenAI API key is not configured')
+  if (!openai) {
+    throw new Error('OpenAI API key is not configured at runtime')
   }
   
   try {
@@ -83,7 +83,7 @@ export async function getMovieRecommendations(theme: string): Promise<Recommende
 - poster_urlは一般的に利用可能な映画ポスター画像のURLを提供（見つからない場合はnull）
 `
 
-    const response = await client.chat.completions.create({
+    const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {
@@ -169,15 +169,14 @@ export async function generateSFImage(theme: string): Promise<GeneratedImage> {
   console.log('API key length:', process.env.OPENAI_API_KEY?.length || 0)
   
   // Try to create client if not already initialized
-  let client = openai
-  if (!client) {
+  if (!openai) {
     console.log('Attempting to create OpenAI client...')
-    client = createOpenAIClient()
+    openai = createOpenAIClient()
   }
   
-  if (!client) {
+  if (!openai) {
     console.error('OpenAI client not initialized - API key missing or invalid')
-    throw new Error('OpenAI API key is not configured')
+    throw new Error('OpenAI API key is not configured at runtime')
   }
   
   try {
@@ -197,7 +196,7 @@ Style: Digital concept art, hyper-realistic, cinematic lighting, 8K quality
     console.log('Calling OpenAI images.generate with model: gpt-image-1')
     console.log('Prompt length:', enhancedPrompt.trim().length)
     
-    const response = await client.images.generate({
+    const response = await openai.images.generate({
       model: 'gpt-image-1',
       prompt: enhancedPrompt.trim(),
       n: 1,
@@ -247,13 +246,12 @@ Style: Digital concept art, hyper-realistic, cinematic lighting, 8K quality
 }
 
 export async function getMovieInfoFromAI(movieTitle: string): Promise<MovieInfo | null> {
-  let client = openai
-  if (!client) {
-    client = createOpenAIClient()
+  if (!openai) {
+    openai = createOpenAIClient()
   }
   
-  if (!client) {
-    throw new Error('OpenAI API key is not configured')
+  if (!openai) {
+    throw new Error('OpenAI API key is not configured at runtime')
   }
   
   try {
