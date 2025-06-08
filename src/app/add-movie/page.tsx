@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { MovieInfo } from '@/lib/openai'
 
 export default function AddMovie() {
   const router = useRouter()

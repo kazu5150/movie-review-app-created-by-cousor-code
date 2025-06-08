@@ -274,7 +274,7 @@ export default function IntelligencePage() {
                   🔥 トレンドキーワード
                 </h3>
                 <div className="flex flex-wrap gap-3">
-                  {analytics.trendingTopics.map((keyword, index) => (
+                  {analytics.trendingTopics.map((keyword) => (
                     <span
                       key={keyword}
                       className="px-4 py-2 rounded-full text-sm font-semibold"
