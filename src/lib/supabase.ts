@@ -9,10 +9,32 @@ if (supabaseUrl === 'https://placeholder.supabase.co') {
   console.warn('Using placeholder Supabase URL - set NEXT_PUBLIC_SUPABASE_URL environment variable')
 }
 
-// Debug logging for environment variables (only log in development)
-if (process.env.NODE_ENV === 'development') {
-  console.log('Supabase URL:', supabaseUrl)
-  console.log('Supabase Key exists:', !!supabaseAnonKey)
-}
+// Debug logging for environment variables
+console.log('Environment:', process.env.NODE_ENV)
+console.log('Supabase URL:', supabaseUrl)
+console.log('Supabase Key exists:', !!supabaseAnonKey)
+console.log('Raw URL env:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+console.log('Raw Key env exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// Test Supabase connection
+export async function testSupabaseConnection() {
+  try {
+    console.log('Testing Supabase connection...')
+    const { data, error } = await supabase
+      .from('movies')
+      .select('count', { count: 'exact', head: true })
+    
+    if (error) {
+      console.error('Supabase connection error:', error)
+      return { success: false, error: error.message }
+    }
+    
+    console.log('Supabase connection successful, movies count:', data)
+    return { success: true, count: data }
+  } catch (error) {
+    console.error('Supabase connection test failed:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+  }
+}

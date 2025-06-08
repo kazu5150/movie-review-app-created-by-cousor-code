@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { supabase, testSupabaseConnection } from '@/lib/supabase'
 import { Movie } from '@/types/movie'
 import ThemeToggle from '@/components/ThemeToggle'
 
@@ -13,6 +13,10 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
+    // Test connection first
+    testSupabaseConnection().then(result => {
+      console.log('Connection test result:', result)
+    })
     fetchMovies()
   }, [])
 
