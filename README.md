@@ -2,17 +2,24 @@
 
 **Iron Man テーマの高度な映画レビューアプリケーション**
 
-Next.js 15 App Router、Supabase、TypeScript を使用したプロフェッショナルレベルの映画レビュープラットフォームです。マーベル・シネマティック・ユニバースのアイアンマンをテーマとし、エンタープライズグレードの分析機能を備えています。
+Next.js 15 App Router、Supabase、OpenAI GPT-4o-mini、TypeScript を使用したプロフェッショナルレベルの映画レビュープラットフォームです。マーベル・シネマティック・ユニバースのアイアンマンをテーマとし、AI統合とエンタープライズグレードの分析機能を備えています。
 
 ![Iron Cinema](https://img.shields.io/badge/Iron%20Cinema-Arc%20Reactor%20Powered-red?style=for-the-badge&logo=marvel)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue?style=for-the-badge&logo=typescript)
 ![Supabase](https://img.shields.io/badge/Supabase-Backend-green?style=for-the-badge&logo=supabase)
+![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o--mini-orange?style=for-the-badge&logo=openai)
 
 ## 🌟 主要機能
 
+### 🤖 J.A.R.V.I.S. AI映画情報自動取得
+- **OpenAI GPT-4o-mini統合**: 映画タイトルから詳細情報を自動取得
+- **ワンクリック情報入力**: 監督、年、ジャンル、あらすじ、ポスターURLを自動補完
+- **高精度検索**: 実在する映画データの正確な取得
+- **J.A.R.V.I.S.インターフェース**: Iron Manテーマに完全統合されたAI体験
+
 ### 🎨 マーク別アーマーテーマシステム
-- **Mark 85 - Iron Man**: クラシックな赤と金のアーク・リアクター
+- **Mark 85 - Iron Man**: ダークで重厚な赤と金のアーク・リアクター
 - **Mark II - War Machine**: 戦術的なダークオペレーション
 - **Mark 49 - Rescue**: 明るいサポートシステム
 - リアルタイムテーマ切替と永続化ストレージ
@@ -27,6 +34,7 @@ Next.js 15 App Router、Supabase、TypeScript を使用したプロフェッシ�
 - **曖昧検索**: タイトル、監督、ジャンル、概要での横断検索
 - **ポスター拡大モーダル**: 美しいアーク・リアクター効果付き
 - **クリック可能ポスター**: ホームページから詳細ページへの直接アクセス
+- **完全編集機能**: 映画情報の追加・編集・更新が可能
 - **レスポンシブデザイン**: モバイル完全対応
 
 ### 📊 データビジュアライゼーション
@@ -41,6 +49,7 @@ Next.js 15 App Router、Supabase、TypeScript を使用したプロフェッシ�
 - Node.js 18.0.0 以上
 - npm または yarn
 - Supabase アカウント
+- OpenAI API Key（J.A.R.V.I.S.機能用）
 
 ### 2. リポジトリのクローン
 ```bash
@@ -49,12 +58,18 @@ cd movie-review-app-created-by-cousor-code
 npm install
 ```
 
-### 3. Supabase セットアップ
+### 3. 環境変数の設定
 1. [Supabase](https://supabase.com) でプロジェクトを作成
-2. `.env.local` ファイルを作成して環境変数を設定:
+2. [OpenAI Platform](https://platform.openai.com/api-keys) でAPI Keyを取得
+3. `.env.local.example` を `.env.local` にコピー
+4. 環境変数を設定:
 ```env
+# Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# OpenAI Configuration (J.A.R.V.I.S.機能用)
+OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxx
 ```
 
 ### 4. データベーススキーマの作成
@@ -91,9 +106,13 @@ ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow public read access on movies" ON movies FOR SELECT USING (true);
 CREATE POLICY "Allow public read access on reviews" ON reviews FOR SELECT USING (true);
 
--- 書き込み権限を全員に付与
+-- 書き込み・更新・削除権限を全員に付与
 CREATE POLICY "Allow public insert access on movies" ON movies FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow public insert access on reviews" ON reviews FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public update access on movies" ON movies FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Allow public update access on reviews" ON reviews FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Allow public delete access on movies" ON movies FOR DELETE USING (true);
+CREATE POLICY "Allow public delete access on reviews" ON reviews FOR DELETE USING (true);
 ```
 
 ### 5. サンプルデータの投入（オプション）
@@ -134,6 +153,7 @@ npm run type-check
 - **フロントエンド**: Next.js 15 (App Router), React 19, TypeScript
 - **スタイリング**: Tailwind CSS v4, Custom CSS Variables
 - **バックエンド**: Supabase (PostgreSQL, RLS)
+- **AI統合**: OpenAI GPT-4o-mini (映画情報自動取得)
 - **データビジュアライゼーション**: Recharts
 - **アニメーション**: CSS Transitions, Custom Keyframes
 - **状態管理**: React Context API
@@ -158,6 +178,7 @@ src/
 │   └── ThemeContext.tsx   # テーマ管理
 ├── lib/                   # ユーティリティ
 │   ├── supabase.ts        # Supabase クライアント
+│   ├── openai.ts          # OpenAI GPT-4o-mini クライアント
 │   ├── stats.ts           # 統計計算
 │   ├── sampleData.ts      # サンプルデータ
 │   └── reviewAnalytics.ts # 高度な分析エンジン
@@ -171,18 +192,18 @@ src/
 |--------|------|------|
 | **ホーム** | `/` | 映画一覧、検索、テーマ切替 |
 | **映画詳細** | `/movie/[id]` | レビュー表示、ポスター拡大 |
-| **映画追加** | `/add-movie` | 新規映画登録 |
-| **映画編集** | `/edit-movie/[id]` | 映画情報編集 |
-| **統計** | `/stats` | 基本的な統計とグラフ |
-| **インテリジェンス** | `/intelligence` | 高度な分析ダッシュボード |
+| **映画追加** | `/add-movie` | J.A.R.V.I.S. AI自動入力、新規映画登録 |
+| **映画編集** | `/edit-movie/[id]` | 映画情報編集・更新 |
+| **インテリジェンス** | `/intelligence` | S.H.I.E.L.D. 高度な分析ダッシュボード |
 | **管理** | `/admin` | サンプルデータ投入 |
 
 ## 🎨 テーマシステム
 
 ### 3つのアーマーテーマ
 1. **Mark 85 - Iron Man** (デフォルト)
-   - プライマリ: 赤 (#dc2626)
-   - セカンダリ: 金 (#fbbf24)
+   - プライマリ: ダークレッド (#b91c1c)
+   - セカンダリ: ダークオレンジ (#d97706)
+   - より深く重厚なダークテーマ
 
 2. **Mark II - War Machine**
    - プライマリ: ダークグレー (#374151)
